@@ -88,7 +88,7 @@
 
         const createScene = async function () {
           const scene = new BABYLON.Scene(engine);
-          scene.clearColor = new BABYLON.Color4(1, 1, 1, 1);
+          scene.clearColor = new BABYLON.Color4(0.2, 0.2, 0.2, 1);
 
           // Model URL
           const model1Url = "https://lukeharris3d.github.io/babylon/glb/JCS_001.glb";
@@ -97,10 +97,10 @@
           // 1. ArcRotateCamera Setup
           const camera = new BABYLON.ArcRotateCamera(
             "camera",
-            1.59,           // alpha (horizontal rotation)
+            1,           // alpha (horizontal rotation)
             1.54,           // beta (vertical rotation)
-            6,              // radius (distance from target)
-            new BABYLON.Vector3(1.25, 2.19, -0.16), // target point it looks at
+            18,              // radius (distance from target)
+            new BABYLON.Vector3(0, 2.5, 0-0.16), // target point it looks at
             scene
           );
           camera.attachControl(canvas, true);
@@ -112,7 +112,7 @@
           const envTex = BABYLON.CubeTexture.CreateFromPrefilteredData(envUrl, scene);
           scene.environmentTexture = envTex;
           scene.imageProcessingConfiguration.exposure = 1;
-          scene.environmentIntensity = 1.5;
+          scene.environmentIntensity = 1;
 
           // Simple Lighting
           const light = new BABYLON.DirectionalLight(
@@ -127,12 +127,12 @@
           // Shadows
           const shadowGenerator = new BABYLON.ShadowGenerator(2048, light);
           shadowGenerator.bias = 0.01;
-          shadowGenerator.darkness = 0; // Grey shadow darkness
+          shadowGenerator.darkness = 0.8; // Grey shadow darkness
 
           // Ground Plane (Grey Shadow Catcher)
           const ground = BABYLON.MeshBuilder.CreateGround(
             "ground",
-            { width: 10, height: 10 },
+            { width: 310, height: 30 },
             scene
           );
           
@@ -167,6 +167,20 @@
 
           // Load model and wait for it
           await loadModel(model1Url, 0);
+
+          // --- Add Post-Processing (Bloom Pipeline) ---
+          const pipeline = new BABYLON.DefaultRenderingPipeline(
+            "defaultPipeline", 
+            true, // use HDR
+            scene, 
+            [camera]
+          );
+
+          // Enable and configure Bloom
+          pipeline.bloomEnabled = true;
+          pipeline.bloomWeight = 2;   // Intensity of the bloom (adjust as needed)
+          pipeline.bloomKernel = 64;    // Size of the blur filter
+          pipeline.bloomThreshold = 0.8; // Minimum brightness required to trigger bloom
 
           // --- WebXR AR Setup (For Android / WebXR-supported browsers) ---
           try {
