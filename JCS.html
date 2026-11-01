@@ -11,6 +11,7 @@
             height: 100%;
             margin: 0;
             padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
         #renderCanvas {
             width: 100%;
@@ -62,6 +63,48 @@
             transform: scale(1.1);
             transition: transform 0.2s ease;
         }
+
+        /* Modern Bottom-Left Day/Night Mode Buttons */
+        #theme-buttons-container {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 999;
+            display: flex;
+            gap: 10px;
+            background: rgba(150, 150, 150, 0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 6px;
+            border-radius: 30px;
+            border: 1px solid rgba(150, 150, 150, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15);
+        }
+
+        .theme-btn {
+            background: transparent;
+            border: none;
+            color: #333333;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .theme-btn:hover {
+            background: rgba(150, 150, 150, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .theme-btn.active {
+            background: #1a1a1a;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
     </style>
 
     <!-- Babylon.js Core and Loaders CDNs -->
@@ -70,6 +113,12 @@
 </head>
 <body>
     <canvas id="renderCanvas"></canvas>
+
+    <!-- Day / Night UI Controls -->
+    <div id="theme-buttons-container">
+        <button id="day-btn" class="theme-btn active">Day</button>
+        <button id="night-btn" class="theme-btn">Night</button>
+    </div>
 
     <!-- Secondary iOS AR Quick Look Anchor Tag -->
     <a id="ios-ar-button" rel="ar" href="https://lukeharris3d.github.io/babylon/glb/JCS_001.usdz">
@@ -88,7 +137,9 @@
 
         const createScene = async function () {
           const scene = new BABYLON.Scene(engine);
-          scene.clearColor = new BABYLON.Color4(0.2, 0.2, 0.2, 1);
+          
+          // Initial Theme Setup (Day: White background)
+          scene.clearColor = new BABYLON.Color4(1, 1, 1, 1);
 
           // Model URL
           const model1Url = "https://lukeharris3d.github.io/babylon/glb/JCS_001.glb";
@@ -98,9 +149,9 @@
           const camera = new BABYLON.ArcRotateCamera(
             "camera",
             1,           // alpha (horizontal rotation)
-            1.54,           // beta (vertical rotation)
-            18,              // radius (distance from target)
-            new BABYLON.Vector3(0, 2.5, 0-0.16), // target point it looks at
+            1.54,        // beta (vertical rotation)
+            18,          // radius (distance from target)
+            new BABYLON.Vector3(0, 2.5, -0.16), // target point it looks at
             scene
           );
           camera.attachControl(canvas, true);
@@ -112,7 +163,7 @@
           const envTex = BABYLON.CubeTexture.CreateFromPrefilteredData(envUrl, scene);
           scene.environmentTexture = envTex;
           scene.imageProcessingConfiguration.exposure = 1;
-          scene.environmentIntensity = 1;
+          scene.environmentIntensity = 1; // Default Day intensity
 
           // Simple Lighting
           const light = new BABYLON.DirectionalLight(
@@ -176,11 +227,40 @@
             [camera]
           );
 
-          // Enable and configure Bloom
+          // Configure Initial Bloom for Day Mode (Weight: 0.1)
           pipeline.bloomEnabled = true;
-          pipeline.bloomWeight = 2;   // Intensity of the bloom (adjust as needed)
-          pipeline.bloomKernel = 64;    // Size of the blur filter
-          pipeline.bloomThreshold = 0.8; // Minimum brightness required to trigger bloom
+          pipeline.bloomWeight = 0.1;   
+          pipeline.bloomKernel = 64;    
+          pipeline.bloomThreshold = 0.8; 
+
+          // --- Theme Switching Logic ---
+          const dayBtn = document.getElementById("day-btn");
+          const nightBtn = document.getElementById("night-btn");
+
+          dayBtn.addEventListener("click", () => {
+              dayBtn.classList.add("active");
+              nightBtn.classList.remove("active");
+
+              // Day settings: White background, bloom weight 0.1
+              scene.clearColor = new BABYLON.Color4(0.9,0.9, 0.9, 1);
+              pipeline.bloomEnabled = true;
+              pipeline.bloomWeight = 0.1;
+              pipeline.bloomKernel = 64;
+              pipeline.bloomThreshold = 0.6
+          });
+
+          nightBtn.addEventListener("click", () => {
+              nightBtn.classList.add("active");
+              dayBtn.classList.remove("active");
+
+              // Night settings: Dark grey background, 0.5 environment intensity, 2 bloom weight
+              scene.clearColor = new BABYLON.Color4(0.02, 0.02, 0.02, 1);
+              scene.environmentIntensity = 1;
+              pipeline.bloomEnabled = true;
+              pipeline.bloomWeight = 4;
+              pipeline.bloomKernel = 64;
+              pipeline.bloomThreshold = 0.8
+          });
 
           // --- WebXR AR Setup (For Android / WebXR-supported browsers) ---
           try {
