@@ -121,7 +121,7 @@
     </div>
 
     <!-- Secondary iOS AR Quick Look Anchor Tag -->
-    <a id="ios-ar-button" rel="ar" href="https://lukeharris3d.github.io/babylon/glb/JCS_001.usdz">
+    <a id="ios-ar-button" rel="ar" href="https://lukeharris3d.github.io/babylon/glb/JCS_002.usdz">
         <img src="https://cdn-icons-png.magnific.com/512/6357/6357932.png" alt="AR Quick Look">
     </a>
 
@@ -142,7 +142,7 @@
           scene.clearColor = new BABYLON.Color4(1, 1, 1, 1);
 
           // Model URL
-          const model1Url = "https://lukeharris3d.github.io/babylon/glb/JCS_001.glb";
+          const model1Url = "https://lukeharris3d.github.io/babylon/glb/JCS_002.glb";
           const envUrl = "https://assets.babylonjs.com/environments/sanGiuseppeBridge.env";
 
           // 1. ArcRotateCamera Setup
@@ -261,9 +261,9 @@
 
               // Night settings: Dark grey background, 0.5 environment intensity, 2 bloom weight
               scene.clearColor = new BABYLON.Color4(0.02, 0.02, 0.02, 1);
-              scene.environmentIntensity = 1;
+              scene.environmentIntensity = 0.5;
               pipeline.bloomEnabled = true;
-              pipeline.bloomWeight = 6;
+              pipeline.bloomWeight = 3;
               pipeline.bloomKernel = 64;
               pipeline.bloomThreshold = 0.8;
 
