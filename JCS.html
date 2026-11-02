@@ -143,7 +143,7 @@
 
           // Model URL
           const model1Url = "https://lukeharris3d.github.io/babylon/glb/JCS_001.glb";
-          const envUrl = "https://assets.babylonjs.com/environments/studio.env";
+          const envUrl = "https://assets.babylonjs.com/environments/sanGiuseppeBridge.env";
 
           // 1. ArcRotateCamera Setup
           const camera = new BABYLON.ArcRotateCamera(
@@ -242,11 +242,17 @@
               nightBtn.classList.remove("active");
 
               // Day settings: White background, bloom weight 0.1
-              scene.clearColor = new BABYLON.Color4(0.9,0.9, 0.9, 1);
+              scene.clearColor = new BABYLON.Color4(0.9, 0.9, 0.9, 1);
               pipeline.bloomEnabled = true;
               pipeline.bloomWeight = 0.1;
               pipeline.bloomKernel = 64;
-              pipeline.bloomThreshold = 0.6
+              pipeline.bloomThreshold = 0.6;
+
+              // Reset "white1" material color for Day
+              const mat = scene.getMaterialByName("white1");
+              if (mat) {
+                  mat.albedoColor = new BABYLON.Color3(1, 1, 1);
+              }
           });
 
           nightBtn.addEventListener("click", () => {
@@ -257,9 +263,15 @@
               scene.clearColor = new BABYLON.Color4(0.02, 0.02, 0.02, 1);
               scene.environmentIntensity = 1;
               pipeline.bloomEnabled = true;
-              pipeline.bloomWeight = 4;
+              pipeline.bloomWeight = 6;
               pipeline.bloomKernel = 64;
-              pipeline.bloomThreshold = 0.8
+              pipeline.bloomThreshold = 0.8;
+
+              // Change "white1" material albedo color to (0.3, 0.3, 0.3) for Night
+              const mat = scene.getMaterialByName("white1");
+              if (mat) {
+                  mat.albedoColor = new BABYLON.Color3(0.1, 0.1, 0.1);
+              }
           });
 
           // --- WebXR AR Setup (For Android / WebXR-supported browsers) ---
