@@ -155,7 +155,7 @@
             scene
           );
           camera.attachControl(canvas, true);
-          camera.fov = BABYLON.Tools.ToRadians(65);
+          camera.fov = BABYLON.Tools.ToRadians(60);
           //camera.upperBetaLimit = (Math.PI / 2) * 0.98; // Prevent going below ground
           camera.wheelPrecision = 50;
           camera.minZ = 0.1; // Near clipping plane
@@ -171,7 +171,7 @@
           // Simple Lighting
           const light = new BABYLON.DirectionalLight(
             "dir01",
-            new BABYLON.Vector3(0.3, -1, -0.4),
+            new BABYLON.Vector3(0.3, -1, -0.1),
             scene
           );
           light.position = new BABYLON.Vector3(0, 15, 0);
